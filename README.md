@@ -2,13 +2,13 @@
 
 Final Term Assignment for the Parallel Programming for Machine Learning course, held by professor Marco Bertini at University of Florence, Italy.
 
-## 1 - Abstract
-Presentazione del problema e riassunto breve dell'approccio, menzionando i vantaggi ottenibili tramite l'utilizzo di OpenMP, con accenno ai risultati ottenuti.
-
-## 2 - Setup
+## 1 - Introduction
 Logica dietro all'operazione di base del'histogram equalization, menzionando brevemente le operazioni che potrebbero essere parallelizzabili.
 
-### 2.1 - Hardware and Software
+## 2 - Code
+Presentazione del problema e riassunto breve dell'approccio, menzionando i vantaggi ottenibili tramite l'utilizzo di OpenMP.
+
+### 2.1 - Hardware and Software setup
 Hardware; versione di OpenMP e di C++; studio rapido del CMake
 
 ### 2.2 - Hyperparameters

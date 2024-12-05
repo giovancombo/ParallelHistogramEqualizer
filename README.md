@@ -14,19 +14,19 @@ Hardware; versione di OpenMP e di C++; studio rapido del CMake
 ### 2.2 - Hyperparameters
 Valori di range dei vari iperparametri.
 
-## 3 - Sequential implementation
+### 2.3 - Sequential implementation
 Elenco degli svantaggi dell'implementazione sequenziale, dei punti deboli che causano rallentamenti; complessità operazionale con l'O grande.
 
-## 4 - Parallel implementation
+### 2.4 - Parallel implementation
 Presentazione iniziale delle aspettative che ho riguardo l'implementazione parallela, ovvero lo speedup.
 Poi, implementazione passo passo di clausole diverse partendo dalla direttiva base, nei vari punti in cui sono state inserite.
 
-## 5 - Speedup and Efficiency Tests
+## 3 - Tests and Results
 Serie di plot
 
-### 5.1 - Number of Threads
+### 3.1 - Number of Threads
 
 ...
 
-## 6 - Conclusion
+## 4 - Conclusion
 recap totale molto rapido dell'esperienza, menzionando la configurazione di iperparametri migliore, e la configurazione di direttiva+clausole migliore per questo problema.

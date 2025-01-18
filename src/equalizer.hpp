@@ -5,13 +5,10 @@
 #ifndef EQUALIZER_HPP
 #define EQUALIZER_HPP
 
-const int CACHE_LINE_LENGTH = 32;
-
 struct Histogram {
     std::vector<int> counts;
     std::vector<int> cdf;
     double mean, stddev;
-
     Histogram() : counts(256, 0), cdf(256, 0), mean(0), stddev(0) {}
 };
 
@@ -19,7 +16,6 @@ struct Image {
     int width, height;
     std::vector<unsigned char> pixels;
     Histogram histogram;
-
     Image(int w, int h) : width(w), height(h), pixels(w * h, 0), histogram() {}
 
     Image(const std::string& path) {
@@ -45,7 +41,6 @@ struct Image {
         if (!file) {
             throw std::runtime_error("Cannot create file: " + path);
         }
-
         file << "P5\n" << width << " " << height << "\n255\n";
         file.write(reinterpret_cast<const char*>(pixels.data()), pixels.size());
     }

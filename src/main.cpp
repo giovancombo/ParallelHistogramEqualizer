@@ -5,16 +5,10 @@
 using namespace std;
 
 int main() {
-    vector<int> IMAGE_SIZES = {1024, 2048};
+    vector<int> IMAGE_SIZES = {256, 512, 1024, 2048};
     vector<int> NUM_THREADS = {2, 4, 8, 12, 16, 24, 32};
-    vector<int> BLOCK_SIZES = {0}; //{4, 8, 12, 16, 20, 24, 32};
+    vector<int> BLOCK_SIZES = {4, 8, 12, 16, 20, 24, 32};
     const int NUM_TIMES = 1000;
-
-    ofstream csv_results("results_14_parallel_numthreads_atomic.csv");
-    csv_results << "imageSize,imageName,numThreads,blockSize,"
-                << "seqHistTime,seqCdfComputeTime,seqCdfNormalizeTime,seqTransformTime,seqExecutionTime,"
-                << "parHistTime,parCdfComputeTime,parCdfNormalizeTime,parTransformTime,parExecutionTime,"
-                << "speedup,efficiency\n";
 
     for(const auto& size : IMAGE_SIZES) {
         string folder_path = "../images/data/" + to_string(size) + "/";
@@ -35,7 +29,6 @@ int main() {
                 seqResult.seqTransformTime += tempResult.seqTransformTime;
                 seqResult.seqExecutionTime += tempResult.seqExecutionTime;
             }
-            //equalizer.saveImage("../images/output/" + to_string(size) + "/" + imageName);
 
             cout << "Sequential Execution Times (over " << NUM_TIMES << " runs):"
                  << "\nHistogram Time: " << seqResult.seqHistTime << " us"
@@ -45,7 +38,7 @@ int main() {
                  << "\nTotal Time: " << seqResult.seqExecutionTime << " us\n";
 
             for(auto numThreads : NUM_THREADS) {
-                for (auto blockSize: BLOCK_SIZES) {
+                for(auto blockSize: BLOCK_SIZES) {
                     cout << "\nTesting with " << numThreads << " threads and block size " << blockSize << endl;
                     ParallelResult parResult = {0, 0, 0, 0, 0, numThreads, blockSize, 0, 0};
 
@@ -69,28 +62,10 @@ int main() {
                          << "\nTotal Time: " << parResult.parExecutionTime << " us"
                          << "\nSpeedup: " << parResult.speedup
                          << "\nEfficiency: " << parResult.efficiency * 100 << "%\n";
-
-                    csv_results << size << ","
-                                << imageName << ","
-                                << numThreads << ","
-                                << blockSize << ","
-                                << seqResult.seqHistTime << ","
-                                << seqResult.seqCdfComputeTime << ","
-                                << seqResult.seqCdfNormalizeTime << ","
-                                << seqResult.seqTransformTime << ","
-                                << seqResult.seqExecutionTime << ","
-                                << parResult.parHistTime << ","
-                                << parResult.parCdfComputeTime << ","
-                                << parResult.parCdfNormalizeTime << ","
-                                << parResult.parTransformTime << ","
-                                << parResult.parExecutionTime << ","
-                                << parResult.speedup << ","
-                                << parResult.efficiency << "\n";
                 }
             }
         }
     }
-
     csv_results.close();
     return 0;
 }

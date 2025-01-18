@@ -23,9 +23,8 @@ SequentialResult HistogramEqualizer::equalizerSequential() {
 
     // 1. Computing histogram: counting gray levels occurrences
     start = std::chrono::high_resolution_clock::now();
-    // Resetting histogram to zero
-    inputImage.histogram.counts.assign(256, 0);
-    for (int i = 0; i < inputImage.width * inputImage.height; i++) {
+    inputImage.histogram.counts.assign(256, 0);                    // Resetting histogram to zero
+    for(int i = 0; i < inputImage.width * inputImage.height; i++) {
         unsigned char pixelValue = inputImage.pixels[i];
         inputImage.histogram.counts[pixelValue]++;
     }
@@ -34,9 +33,7 @@ SequentialResult HistogramEqualizer::equalizerSequential() {
 
     // 2. Computing Cumulative Distribution Function (CDF) of the histogram
     start = std::chrono::high_resolution_clock::now();
-    // The first value of CDF is equal to the first value of the histogram
-    inputImage.histogram.cdf[0] = inputImage.histogram.counts[0];
-    // Every following value is equal to the sum of all previous values
+    inputImage.histogram.cdf[0] = inputImage.histogram.counts[0];        // first CDF value is equal to first histogram value
     for(int i = 1; i < 256; i++) {
         inputImage.histogram.cdf[i] = inputImage.histogram.cdf[i-1] + inputImage.histogram.counts[i];
     }
@@ -45,7 +42,7 @@ SequentialResult HistogramEqualizer::equalizerSequential() {
 
     // 3. Normalizing CDF to the range 0-255
     start = std::chrono::high_resolution_clock::now();
-    // Finding the first non-zero value of the CDF, to prevent division by zero
+    // finding the first non-zero CDF value, to prevent division by zero
     int cdfMin = 0;
     for(int i = 0; i < 256; i++) {
         if(inputImage.histogram.cdf[i] > 0) {
@@ -63,7 +60,7 @@ SequentialResult HistogramEqualizer::equalizerSequential() {
     // 4. Transforming Image
     start = std::chrono::high_resolution_clock::now();
     for(int i = 0; i < inputImage.width * inputImage.height; i++) {
-        // Takes the old pixel value (that of the input image) and finds the new one using the CDF
+        // taking the old pixel value (that of the input image) and finding the new one using the CDF
         unsigned char oldValue = inputImage.pixels[i];
         outputImage.pixels[i] = static_cast<unsigned char>(inputImage.histogram.cdf[oldValue]);
     }
@@ -79,6 +76,7 @@ ParallelResult HistogramEqualizer::equalizerParallel(int numThreads, int blockSi
     ParallelResult result;
     result.numThreads = numThreads;
     result.blockSize = blockSize;
+
     int totalPixels = inputImage.width * inputImage.height;
     vector<int> cdf = inputImage.histogram.cdf;
 
@@ -87,32 +85,24 @@ ParallelResult HistogramEqualizer::equalizerParallel(int numThreads, int blockSi
 
     // 1. Computing histogram: counting gray levels occurrences
     start = std::chrono::high_resolution_clock::now();
-    // Resetting histogram to zero
-    #pragma omp parallel num_threads(numThreads)
+    #pragma omp parallel num_threads(numThreads) schedule(static, block_size)
     {
-        vector<int> local_hist(256, 0);             // creo un local histogram calcolato da ciascun thread
+        vector<int> local_hist(256, 0);             // creating a local histogram for each thread
         #pragma omp for
         for (int i = 0; i < totalPixels; i++) {
             local_hist[inputImage.pixels[i]]++;
         }
-
-        for (int i = 0; i < 256; i++) {
-            #pragma omp atomic
+        #pragma omp critical
+        for(int i = 0; i < 256; i++) {
             inputImage.histogram.counts[i] += local_hist[i];
         }
-        //#pragma omp critical
-        //for(int i = 0; i < 256; i++) {
-        //    inputImage.histogram.counts[i] += local_hist[i];    // uniamo i contributi di ogni local histogram in quello totale
-        //}
     }
     end = std::chrono::high_resolution_clock::now();
     result.parHistTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
     // 2. Computing Cumulative Distribution Function (CDF) of the histogram
     start = std::chrono::high_resolution_clock::now();
-    // The first value of CDF is equal to the first value of the histogram
     inputImage.histogram.cdf[0] = inputImage.histogram.counts[0];
-    // Every following value is equal to the sum of all previous values
     for(int i = 1; i < 256; i++) {
         inputImage.histogram.cdf[i] = inputImage.histogram.cdf[i-1] + inputImage.histogram.counts[i];
     }
@@ -121,7 +111,6 @@ ParallelResult HistogramEqualizer::equalizerParallel(int numThreads, int blockSi
 
     // 3. Normalizing CDF to the range 0-255
     start = std::chrono::high_resolution_clock::now();
-    // Finding the first non-zero value of the CDF, to prevent division by zero
     int cdfMin = 0;
     for(int i = 0; i < 256; i++) {
         if(inputImage.histogram.cdf[i] > 0) {
@@ -129,8 +118,6 @@ ParallelResult HistogramEqualizer::equalizerParallel(int numThreads, int blockSi
             break;
         }
     }
-    // Normalization formula: (cdf(v) - cdfMin) * (L-1)/(N - cdfMin), with L=256 (gray levels) e N=total number of pixels
-    //#pragma omp parallel for num_threads(numThreads)
     for(int i = 0; i < 256; i++) {
         inputImage.histogram.cdf[i] = round((float)(inputImage.histogram.cdf[i] - cdfMin) * 255.0 / (inputImage.width * inputImage.height - cdfMin));
     }
@@ -139,7 +126,7 @@ ParallelResult HistogramEqualizer::equalizerParallel(int numThreads, int blockSi
 
     // 4. Transforming Image
     start = std::chrono::high_resolution_clock::now();
-    #pragma omp parallel for num_threads(numThreads)
+    #pragma omp parallel for num_threads(numThreads) schedule(static, block_size)
     for(int i = 0; i < totalPixels; i++) {
         outputImage.pixels[i] = static_cast<unsigned char>(cdf[inputImage.pixels[i]]);
     }

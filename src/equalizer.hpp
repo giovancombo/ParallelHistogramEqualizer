@@ -41,7 +41,7 @@ struct Image {
         if (!file) {
             throw std::runtime_error("Cannot create file: " + path);
         }
-        file << "P5\n" << width << " " << height << "\n255\n";
+        file << "P6\n" << width << " " << height << "\n255\n";
         file.write(reinterpret_cast<const char*>(pixels.data()), pixels.size());
     }
 };

@@ -16,7 +16,6 @@ endif()
 add_executable(2_finalterm
         src/main.cpp
         src/equalizer.cpp
-        src/equalizer.hpp
 )
 
 target_link_libraries(2_finalterm PRIVATE OpenMP::OpenMP_CXX)

@@ -8,7 +8,7 @@
 using namespace std;
 
 HistogramEqualizer::HistogramEqualizer(const std::string& imagePath) :
-        inputImage(imagePath), outputImage(inputImage.width, inputImage.height) {}
+    inputImage(imagePath), outputImage(inputImage.width, inputImage.height) {}
 
 HistogramEqualizer::~HistogramEqualizer() {}
 
@@ -72,7 +72,7 @@ SequentialResult HistogramEqualizer::equalizerSequential() {
     return result;
 }
 
-ParallelResult HistogramEqualizer::equalizerParallel(int numThreads, int blockSize, float seqExecutionTime) {
+ParallelResult HistogramEqualizer::equalizerParallel(int numThreads, int blockSize) {
     ParallelResult result;
     result.numThreads = numThreads;
     result.blockSize = blockSize;
@@ -85,16 +85,18 @@ ParallelResult HistogramEqualizer::equalizerParallel(int numThreads, int blockSi
 
     // 1. Computing histogram: counting gray levels occurrences
     start = std::chrono::high_resolution_clock::now();
-    #pragma omp parallel num_threads(numThreads) schedule(static, block_size)
+    #pragma omp parallel num_threads(numThreads)
     {
-        vector<int> local_hist(256, 0);             // creating a local histogram for each thread
+        vector<int> local_hist(256, 0);    // local histogram for each thread
         #pragma omp for
         for (int i = 0; i < totalPixels; i++) {
             local_hist[inputImage.pixels[i]]++;
         }
         #pragma omp critical
-        for(int i = 0; i < 256; i++) {
-            inputImage.histogram.counts[i] += local_hist[i];
+        {
+            for(int i = 0; i < 256; i++) {
+                inputImage.histogram.counts[i] += local_hist[i];
+            }
         }
     }
     end = std::chrono::high_resolution_clock::now();
@@ -126,7 +128,7 @@ ParallelResult HistogramEqualizer::equalizerParallel(int numThreads, int blockSi
 
     // 4. Transforming Image
     start = std::chrono::high_resolution_clock::now();
-    #pragma omp parallel for num_threads(numThreads) schedule(static, block_size)
+    #pragma omp parallel for num_threads(numThreads)
     for(int i = 0; i < totalPixels; i++) {
         outputImage.pixels[i] = static_cast<unsigned char>(cdf[inputImage.pixels[i]]);
     }

@@ -1,6 +1,13 @@
 # Parallel Histogram Equalization in C++ with OpenMP
 
-Final Term Assignment for the Parallel Programming for Machine Learning course, held by professor Marco Bertini at University of Florence, Italy.
+Finalterm Assignment for the *Parallel Programming for Machine Learning* course, held by professor Marco Bertini at University of Florence, Italy.
+
+<p float="left", align="center">
+  <img src="https://github.com/giovancombo/ParallelHistogramEqualizer/blob/main/images/data/1024_2_oe.jpg" width="24%" />
+  <img src="https://github.com/giovancombo/ParallelHistogramEqualizer/blob/main/images/output/rgb/1024-2-oe.jpg" width="24%" />
+  <img src="https://github.com/giovancombo/ParallelHistogramEqualizer/blob/main/images/data/1024_2_ue.jpg" width="24%" />
+  <img src="https://github.com/giovancombo/ParallelHistogramEqualizer/blob/main/images/output/rgb/1024-2-ue.jpg" width="24%" />
+</p>
 
 ## 1 - Introduction
 Logica dietro all'operazione di base del'histogram equalization, menzionando brevemente le operazioni che potrebbero essere parallelizzabili.

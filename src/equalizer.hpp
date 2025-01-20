@@ -67,7 +67,7 @@ public:
     void saveImage(const std::string& filename);
 
     SequentialResult equalizerSequential();
-    ParallelResult equalizerParallel(int numThreads, int blockSize, float seqExecutionTime);
+    ParallelResult equalizerParallel(int numThreads, int blockSize);
 };
 
 #endif

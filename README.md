@@ -1,6 +1,6 @@
 # Parallel Histogram Equalization in C++ with OpenMP
 
-Finalterm Assignment for the *Parallel Programming for Machine Learning* course, held by professor Marco Bertini at University of Florence, Italy.
+Finalterm Assignment for the *Parallel Programming for Machine Learning* course, taught by professor Marco Bertini at University of Florence, Italy.
 
 <p float="left", align="center">
   <img src="https://github.com/giovancombo/ParallelHistogramEqualizer/blob/main/images/data/1024_2_oe.jpg" width="24%" />
